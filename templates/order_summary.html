@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!--Main layout-->
+<main>
+    <div class="container">
+        <!--Grid row-->
+        <div class="row wow fadeIn">
+            <!--Grid column-->
+            <div class="col">
+
+                <table class="table">
+
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Item Title</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Quantity</th>
+                            <th scope="col">Total Item Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order_item in object.items.all %}
+                        <tr>
+                            <th scope="row">1</th>
+                            <td>
+                                <a href="{{ order_item.item.get_absolute_url }}">{{ order_item.item.title }}</a>
+                            </td>
+                            <td>{{ order_item.item.description }}</td>
+                            <td>
+                                {% if order_item.item.discount_price %}
+                                {{ order_item.item.discount_price }}
+                                {% else %}
+                                {{ order_item.item.price }}
+                                {% endif %}
+
+                            </td>
+                            <td>
+                                <a href="{% url 'core:remove-single-item-from-cart' order_item.item.slug %}"><i
+                                        class="fas fa-minus mr-2"></i></a>
+                                {{ order_item.quantity }}
+                                <a href="{% url 'core:add-to-cart' order_item.item.slug %}"><i
+                                        class="fas fa-plus ml-2"></i></a>
+                            </td>
+
+                            <td>
+                                {% if order_item.item.discount_price %}
+                                {{ order_item.get_total_discount_item_price }}
+                                <span class="badge badge-pill danger-color p-2 pl-4  pr-4 ml-2">
+                                    Saving ${{ order_item.get_total_amount_saved}}
+                                </span>
+                                {% else %}
+                                {{ order_item.get_total_item_price }}
+                                {% endif %}
+                                <a href="{% url 'core:remove-from-cart' order_item.item.slug %}" class="text-danger">
+                                    <i class="fas fa-trash-alt float-right"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <td colspan="6">Your Cart is empty!</td>
+                        <td colspan="6">
+                            <a class="btn btn-primary float-right" href=" /">Continue Shopping</a>
+                        </td>
+                        {% endfor %}
+                        {% if object.coupon %}
+                        <tr>
+                            <td colspan="5">
+                                <h6><b>Compun</b>: {{ object.coupon.code }}</h6>
+                            </td>
+                            <td>
+                                <h6><b>-${{ object.coupon.amount }}</b></h6>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% if object.get_total %}
+                        <tr>
+                            <td colspan="5">
+                                <h6><b>Total Price</b></h6>
+                            </td>
+                            <td>
+                                <h6><b>${{ object.get_total }}</b></h6>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="6">
+                                <a class="btn btn-warning float-right ml-2"" href=" /checkout">Proceed to checkout</a>
+                                <a class="btn btn-primary float-right" href=" /">Continue Shopping</a>
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+
+                </table>
+
+            </div>
+        </div>
+</main>
+<!--Main layout-->
+{% endblock content %}
